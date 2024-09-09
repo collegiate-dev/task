@@ -17,6 +17,7 @@ export type User = {
   notion_id: string;
 };
 export const users: User[] = [
+  // TODOS
   {
     name: Worker.JesseLee,
     discord_username: "onetruejeezus",

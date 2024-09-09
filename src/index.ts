@@ -1,36 +1,46 @@
 import { discord } from "./clients";
-import { selectLoggers } from "./data";
-import { validTodoChannel } from "./data"; // todo
-
 import { createTask } from "./notion";
-// import { formatMessage, parseMentions } from "./utils";
-// import { getTodo, validTodoId, getLogger, getUser, getRoleUsers } from "./data";
+import { getTodo, getUser, selectLoggers, validTodoChannel } from "./data";
+import { MessageHelper } from "./message";
+import type { Message } from "discord.js";
+import { parseMentions } from "./utils";
 
 discord.once("ready", () => {
   if (discord.user) console.log(`Logged in as ${discord.user.tag}`);
   else console.error("Failed to login");
 });
 
-discord.on("messageCreate", async (message) => {
-  const { errorLog, successLog } = selectLoggers(discord.channels);
+// casting message type to Message<boolean> cuz idk tf default message type does
+discord.on("messageCreate", async (message: Message<boolean>) => {
   // Ignore messages from bots (including self)
   if (message.author.bot) return;
-  //   console.log("at least here", message.content);
 
   if (validTodoChannel(message.channel.id)) {
-    const task = formatMessage(message.content);
-    const url = `https://discord.com/channels/${message.guild.id}/${message.channel.id}/${message.id}`; // discord message link
-    const assigner = getUser(message.author.username, "discord");
-    const channel = getTodo(message.channel.id, "id");
+    const { errorLog, successLog } = selectLoggers(discord.channels);
+    const messageHelper = new MessageHelper(message);
+
+    const task = messageHelper.formattedMessage();
+    const url = messageHelper.messageUrl();
+
+    const assigner = getUser(message.author.username, "discord_username");
+    const channel = getTodo(message.channel.id, "channel_id");
+
+    // we need an input channel in all scenarios
+    if (!channel || !assigner) {
+      console.error("Invalid channel or assigner");
+      return;
+    }
 
     // get everyone needed to create a task for
-    const mentioned = parseMentions(message, channel);
+    const assignTasks = parseMentions(message.mentions, channel);
+    if (assignTasks.length === 0) return; // only run on pings
 
-    if (mentioned.length === 0) return; // only run if mentions are found
+    // TODO from here
+
     // generate tasks, if error we log and return
     try {
       await Promise.all(
-        mentioned.map(async (assigned) => {
+        assignTasks.map(async (assigned) => {
           await createTask(
             task,
             url,
@@ -41,29 +51,22 @@ discord.on("messageCreate", async (message) => {
         })
       );
     } catch (error) {
-      const errorChannel = discord.channels.cache.get("1281898208708001873"); // 🚨┃error-logs
       // notifies @Tech of error
       const errorMessage = `<@&1281661066270478336> **TASKMASTER ERROR!**\n${
         assigner.name
       } tried to assign task to: ${mentioned
         .map((user) => user.name)
-        .join(", ")}, but failed to create task.\n${url}`;
-
-      if (errorChannel) errorChannel.send(errorMessage);
+        .join(", ")}, but failed to create task.\n${url}`; // migrate to message helper
+      errorLog.send(errorMessage);
       return;
     }
 
-    const successLog = discord.channels.cache.get(
-      getLogger(message.channel.id)
-    );
-    if (!successLog) return;
-
     // successful log output
-    const success = `${assigner.name} assigned task to: ${mentioned
+    const successMessage = `${assigner.name} assigned task to: ${mentioned
       .map((user) => user.name)
       .join(", ")}\n**${task}**\n${url}`;
 
-    successLog.send(success);
-    console.log("\n" + success);
+    successLog.send(successMessage); // migrate to message helper
+    console.log("\n" + successMessage);
   }
 });
