@@ -1,5 +1,9 @@
 # taskmaster
 
+syncs discord todo channels with notion.
+
+## setup
+
 To install dependencies:
 
 ```bash
