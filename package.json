@@ -1,0 +1,18 @@
+{
+  "name": "taskmaster",
+  "module": "src/index.ts",
+  "type": "module",
+  "scripts": {
+    "dev": "bun run src/index.ts"
+  },
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "@notionhq/client": "^2.2.15",
+    "discord.js": "^14.16.1"
+  }
+}
