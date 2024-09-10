@@ -34,7 +34,7 @@ export const TEAMS: T_Team[] = [
   {
     role: E_Role.AM,
     discord_id: "1281571738555252796",
-    members: [wu(E_Worker.SeanAndreMembrido)],
+    members: [wu(E_Worker.SeanAndreMembrido), wu(E_Worker.JesseLee)],
     access: E_Access.Team,
   },
   {
