@@ -96,3 +96,14 @@ export const TEAMS: T_Team[] = [
 export const getTeam = (value: string, key: keyof T_Team) => {
   return TEAMS.find((team) => team[key] === value);
 };
+
+export const accessUsers = (access: E_Access) => {
+  switch (access) {
+    case E_Access.Admin:
+      return founders;
+    case E_Access.Finance:
+      return [...founders, wu(E_Worker.AgrimDhingra)];
+    default:
+      return everyone;
+  }
+};

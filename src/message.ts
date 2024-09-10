@@ -2,7 +2,7 @@
 
 import type { Message } from "discord.js";
 import { isDefined } from "./utils";
-import { getTeam } from "./data/teams";
+import { accessUsers, getTeam } from "./data/teams";
 import type { T_TodoChannel, T_User } from "./data/schema/types";
 import { getUser } from "./data/users";
 
@@ -15,12 +15,15 @@ export class MessageHelper {
   }
 
   formattedMessage = () => {
-    // Use regex to match <@id> and surrounding spaces, then replace with a single space
-    const formatted = this.message.content
+    let res = this.message.content;
+    // remove mentions <@id>, then replace with a single space
+    res = this.message.content
       .replace(/<@[\d]+>|<@&[\d]+>\s*/g, "")
       .replace(/\s\s+/g, " ")
       .trim();
-    return formatted || "TODO"; // if empty message, return placeholder
+    // remove urls
+    res = res.replace(/https?:\/\/\S+/g, "LINK");
+    return res || "TODO"; // if empty message, return placeholder
   };
 
   messageUrl = () => {
@@ -46,12 +49,10 @@ export class MessageHelper {
     // remove duplicate users
     const members = [...new Set([...users, ...roleUsers])];
 
-    // // filters message pinging for channels
-    // // ex: in admin-todos, typing @AM will not create a task for AM
-    const filtered = members.filter((user) =>
-      channel.team.members.map((m) => m.name).includes(user.name)
-    );
-    return filtered;
+    // filters message pinging for channels based on access level
+    // ex: in admin-todos, typing @AM will not create a task for AM
+    const access = accessUsers(channel.team.access);
+    return members.filter((user) => access.includes(user));
   };
 
   successMessage = (assigner: T_User, assigned: T_User, notionUrl?: string) => {
