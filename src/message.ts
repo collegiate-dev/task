@@ -6,6 +6,7 @@ import { accessUsers, getTeam } from "./schema/teams";
 import type { T_TodoChannel, T_User } from "./schema/models/types";
 import { getUser } from "./schema/users";
 import { __prod__ } from "./constants";
+import { E_Access } from "./schema/models/enums";
 
 export class MessageHelper {
   public PING_TECH_ROLE: string = "<@&1281661066270478336>";
@@ -36,6 +37,9 @@ export class MessageHelper {
 
   // returns a list of mentioned users based on all message pings
   parseMentions = (channel: T_TodoChannel) => {
+    const everyoneOrNone = this.message.mentions.everyone
+      ? accessUsers(E_Access.Team) // entire team
+      : [];
     const users = this.message.mentions.users
       .map((user) => getUser(user.id, "discord_id"))
       .filter(isDefined);
@@ -45,9 +49,7 @@ export class MessageHelper {
         return role ? role.members : [];
       })
       .flat();
-
-    // remove duplicate users
-    const members = [...new Set([...users, ...roleUsers])];
+    const members = [...new Set([...users, ...roleUsers, ...everyoneOrNone])]; // remove duplicate users
 
     // filters message pinging for channels based on access level
     // ex: in admin-todos, typing @AM will not create a task for AM
