@@ -1,9 +1,10 @@
 import { discord } from "./clients";
-import { createTask } from "./notion";
-import { getTodo, getUser, selectLoggers, validTodoChannel } from "./data";
+import { createTasks } from "./notion";
 import { MessageHelper } from "./message";
+import { selectLoggers } from "./data/loggers";
+import { validTodoChannel, getTodo } from "./data/todos";
+import { getUser } from "./data/users";
 import type { Message } from "discord.js";
-import { parseMentions } from "./utils";
 
 discord.once("ready", () => {
   if (discord.user) console.log(`Logged in as ${discord.user.tag}`);
@@ -17,10 +18,10 @@ discord.on("messageCreate", async (message: Message<boolean>) => {
 
   if (validTodoChannel(message.channel.id)) {
     const { errorLog, successLog } = selectLoggers(discord.channels);
-    const messageHelper = new MessageHelper(message);
+    const MH = new MessageHelper(message);
 
-    const task = messageHelper.formattedMessage();
-    const url = messageHelper.messageUrl();
+    const taskContent = MH.formattedMessage();
+    const messageUrl = MH.messageUrl();
 
     const assigner = getUser(message.author.username, "discord_username");
     const channel = getTodo(message.channel.id, "channel_id");
@@ -32,41 +33,31 @@ discord.on("messageCreate", async (message: Message<boolean>) => {
     }
 
     // get everyone needed to create a task for
-    const assignTasks = parseMentions(message.mentions, channel);
-    if (assignTasks.length === 0) return; // only run on pings
-
-    // TODO from here
+    const assignments = MH.parseMentions(channel);
+    if (assignments.length === 0) return; // only run on pings
 
     // generate tasks, if error we log and return
     try {
-      await Promise.all(
-        assignTasks.map(async (assigned) => {
-          await createTask(
-            task,
-            url,
-            channel.name,
-            assigner.notion,
-            assigned.notion
-          ); // this is why we use typescript dawg
-        })
-      );
+      const tasks = assignments.map((assigned) => {
+        return {
+          task: taskContent,
+          url: messageUrl,
+          channel: channel.name,
+          assignerId: assigner.notion_id,
+          assignedId: assigned.notion_id,
+        };
+      });
+      await createTasks(tasks);
+
+      // successful log output
+      const successMessage = MH.successMessage(assigner, assignments);
+      successLog.send(successMessage);
+      console.log("\n" + successMessage);
     } catch (error) {
-      // notifies @Tech of error
-      const errorMessage = `<@&1281661066270478336> **TASKMASTER ERROR!**\n${
-        assigner.name
-      } tried to assign task to: ${mentioned
-        .map((user) => user.name)
-        .join(", ")}, but failed to create task.\n${url}`; // migrate to message helper
+      const errorMessage = MH.errorMessage(assigner, assignments);
       errorLog.send(errorMessage);
+      console.error(errorMessage + "\n" + error);
       return;
     }
-
-    // successful log output
-    const successMessage = `${assigner.name} assigned task to: ${mentioned
-      .map((user) => user.name)
-      .join(", ")}\n**${task}**\n${url}`;
-
-    successLog.send(successMessage); // migrate to message helper
-    console.log("\n" + successMessage);
   }
 });
