@@ -1,6 +1,7 @@
 import type { ChannelManager, TextChannel } from "discord.js";
 import { E_Logger } from "./schema/enums";
 import type { T_LoggerChannel } from "./schema/types";
+import { __prod__ } from "../constants";
 
 export const LOGGERS: T_LoggerChannel[] = [
   {
@@ -25,7 +26,8 @@ export const LOGGERS: T_LoggerChannel[] = [
 export const selectLoggers = (channelManager: ChannelManager) => {
   const getLogger = (logger: E_Logger) => {
     const log = LOGGERS.find((l) => l["name"] === logger);
-    const channel = channelManager.cache.get(log!.channel_id); // should be safe
+    if (!log) throw new Error("Logger not found");
+    const channel = channelManager.cache.get(log.channel_id);
     if (!channel) throw new Error("Channel not found");
     return channel as TextChannel;
   };
@@ -34,5 +36,5 @@ export const selectLoggers = (channelManager: ChannelManager) => {
   const testingSuccess = getLogger(E_Logger.TestingTodoLogs);
   const errorLog = getLogger(E_Logger.ErrorLogs);
 
-  return { errorLog, successLog: testingSuccess }; // TODO, check via railway instead
+  return { errorLog, successLog: __prod__ ? prodSuccess : testingSuccess };
 };

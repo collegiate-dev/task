@@ -11,16 +11,19 @@ const rt = (role: E_Role | "Testing"): T_Team => {
 
 export const TODOS: T_TodoChannel[] = [
   {
+    // works
     team: rt(E_Role.Admin),
     channel_name: "📝┃admin-todos",
     channel_id: "1133467940180734015",
   },
   {
+    // works
     team: rt(E_Role.Finance),
     channel_name: "📝┃finance-todos",
     channel_id: "1219430575660859575",
   },
   {
+    // works
     team: rt(E_Role.Team),
     channel_name: "🎓┃team-todos",
     channel_id: "1281666129164501073",
@@ -28,29 +31,30 @@ export const TODOS: T_TodoChannel[] = [
   {
     team: rt(E_Role.Marketing),
     channel_name: "🎨┃marketing-todos",
-    channel_id: "1133496251158106232",
+    channel_id: "1282638263584161792",
   },
   {
     team: rt(E_Role.Sales),
     channel_name: "📈┃sales-todos",
-    channel_id: "1166884498156298362",
+    channel_id: "1282637508299194418",
   },
   {
     team: rt(E_Role.Counseling),
     channel_name: "🗂┃counseling-todos",
-    channel_id: "1136767112078180474",
+    channel_id: "1282637912256548897",
   },
   {
     team: rt(E_Role.Operations),
     channel_name: "🗺┃operations-todos",
-    channel_id: "1281569251215540224",
+    channel_id: "1282638012953661470",
   },
   {
     team: rt(E_Role.Tech),
     channel_name: "🤖┃tech-todos",
-    channel_id: "1133492237079150592",
+    channel_id: "1282637597016850463",
   },
   {
+    // works
     team: rt("Testing"),
     channel_name: "📝┃testing-todos",
     channel_id: "1281595508896432128",

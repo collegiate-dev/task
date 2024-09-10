@@ -39,7 +39,7 @@ export const createTask = async ({
   } else if (channel.team.access === E_Access.Team) {
     properties = {
       ...properties,
-      Channel: NH.setSelect(channel.channel_name),
+      Channel: NH.setSelect(channel.team.role),
     };
   }
 

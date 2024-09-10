@@ -48,15 +48,10 @@ export class MessageHelper {
 
     // // filters message pinging for channels
     // // ex: in admin-todos, typing @AM will not create a task for AM
-    const filteredMembers = members.filter((user) =>
+    const filtered = members.filter((user) =>
       channel.team.members.map((m) => m.name).includes(user.name)
     );
-
-    console.log(
-      "filteredMembers",
-      filteredMembers.map((u) => u.name)
-    );
-    return filteredMembers;
+    return filtered;
   };
 
   successMessage = (assigner: T_User, assigned: T_User, notionUrl?: string) => {
