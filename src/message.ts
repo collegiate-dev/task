@@ -5,10 +5,10 @@ import { isDefined } from "./utils";
 import { accessUsers, getTeam } from "./schema/teams";
 import type { T_TodoChannel, T_User } from "./schema/models/types";
 import { getUser } from "./schema/users";
-
-const PING_TECH_ROLE = "<@&1281661066270478336>";
+import { __prod__ } from "./constants";
 
 export class MessageHelper {
+  public PING_TECH_ROLE: string = "<@&1281661066270478336>";
   private message: Message<boolean>;
   constructor(message: Message<boolean>) {
     this.message = message;
@@ -60,7 +60,8 @@ export class MessageHelper {
     return `${assignments}\n${this.helpers.taskData(notionUrl)}`;
   };
   errorMessage = (assigner: T_User, assigned: T_User[]) => {
-    const errorHeader = `${PING_TECH_ROLE} **TASKMASTER ERROR!**`;
+    const errorOrigin = __prod__ ? this.PING_TECH_ROLE : "Dev Error:";
+    const errorHeader = `${errorOrigin} **TASKMASTER ERROR!**`;
     const assignments = this.helpers.assignments(assigner, assigned);
     return `${errorHeader}\n${assignments}\n${this.helpers.taskData()}`;
   };
