@@ -1,3 +1,4 @@
+import dayjs from "dayjs";
 import { notion } from "./clients";
 import { E_Access, E_Testing } from "./schema/models/enums";
 import type { T_TodoChannel, T_User } from "./schema/models/types";
@@ -27,6 +28,7 @@ export const createTask = async ({
   let properties = {
     Task: NH.setTitle(truncate(title)),
     Status: NH.setSelect("Todo"),
+    Deadline: NH.setDate(3), // default deadline is 3 days
     Assigner: NH.setPerson(assigner.notion_id),
     Assigned: NH.setPerson(assigned.notion_id),
   } as any; // remove any when informally testing code
@@ -45,11 +47,13 @@ export const createTask = async ({
 
   const created = await notion.pages.create({
     parent: { database_id: channel.team.access },
-    properties,
+    properties: {
+      ...properties,
+    },
     children: [NH.urlObject(url)],
   });
 
-  // Notion typing is still wrong
+  // Notion sdk typing is still wrong to this day..
   //@ts-ignore
   return created.url as string;
 };
@@ -81,6 +85,14 @@ const NH = {
           id,
         },
       ],
+    };
+  },
+  setDate: (fromToday: number) => {
+    // 0 = today, 1 = tomorrow, 2 = in 2 days, etc
+    return {
+      date: {
+        start: dayjs().add(fromToday, "day").toISOString(),
+      },
     };
   },
   urlObject: (url: string) => {
