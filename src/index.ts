@@ -39,19 +39,21 @@ discord.on("messageCreate", async (message: Message<boolean>) => {
 
     // generate tasks, if error we log and return
     try {
-      const taskPromises = assignments.map(async (assigned) =>
-        createTask({
-          title: MH.formattedMessage(),
-          url: MH.messageUrl(),
-          channel,
-          assigner,
-          assigned,
-        }).then((notionUrl) => {
-          const success = MH.successMessage(assigner, assigned, notionUrl);
-          console.log("\n" + success);
-          if (__prod__ && channel.team.role === E_Testing.Testing) return;
-          successLog.send(success);
-        })
+      const taskPromises = assignments.map(
+        async (assigned) =>
+          __prod__ && // only create tasks in prod by default
+          createTask({
+            title: MH.formattedMessage(),
+            url: MH.messageUrl(),
+            channel,
+            assigner,
+            assigned,
+          }).then((notionUrl) => {
+            const success = MH.successMessage(assigner, assigned, notionUrl);
+            console.log("\n" + success);
+            if (__prod__ && channel.team.role === E_Testing.Testing) return;
+            successLog.send(success);
+          })
       );
       await Promise.all(taskPromises);
     } catch (error) {
