@@ -18,3 +18,4 @@ How to not shoot yourself in the foot and break things (run integration tests wh
 5. Delete the old Taskmaster tables
 6. Move Finance Taskmaster to Finance Work location
 7. Update new Taskmaster table ids in this codebase, under `src/schema/models/enums.ts`
+8. Update references in Taskmaster Notion documentation page
