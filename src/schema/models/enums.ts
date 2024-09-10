@@ -30,8 +30,8 @@ export enum E_Testing {
 }
 
 export enum E_Access { // Admin > Finance > Team, taskmaster notion db ids
-  Admin = "f22043127d274498af20cfba53db0aa2",
-  Finance = "76e9ec3b0a514dc59a1206cd8bbaaebc",
+  Admin = "acc6b242df8f4892ab8f7ee2a374d4ba",
+  Finance = "82c31a22aa2341f39a0bbb130d7759f3",
   Team = "42ab110e5caf4c7d8eeb28a815805fc5",
 }
 
