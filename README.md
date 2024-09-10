@@ -11,11 +11,10 @@ syncs discord todo channels with notion.
 
 How to not shoot yourself in the foot and break things (run integration tests when they're up):
 
-1. Edit table changes on Taskmaster-Team table first (easiest to migrate)
-2. Once changes are finalized, duplicate tables x2 then move them to Taskmaster-Home
-3. For new Admin + Finance table, edit the table name, remove Channel property, then migrate all data over
-4. For new Admin table, add type Testing into status property and add Testing view
-5. Move data from old Taskmaster tables to the new tables you just setup
-6. Delete the old Taskmaster tables
-7. Move Finance table to Finance Work
-8. Update new Taskmaster table ids in this codebase, under `src/schema/models/enums.ts`
+1. Edit table changes on Team Taskmaster table first (easiest to migrate)
+2. Once changes are finalized, duplicate Team Taskmaster tables x2 then move them to Taskmaster-Home
+3. For new Admin + Finance Taskmaster table, edit the table name, remove Channel property, then migrate all data over
+4. Move data from old Taskmaster tables to the new Taskmaster tables you just setup
+5. Delete the old Taskmaster tables
+6. Move Finance Taskmaster to Finance Work location
+7. Update new Taskmaster table ids in this codebase, under `src/schema/models/enums.ts`

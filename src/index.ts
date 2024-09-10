@@ -16,13 +16,11 @@ discord.once("ready", () => {
 // casting message type to Message<boolean> cuz idk tf default message type does
 discord.on("messageCreate", async (message: Message<boolean>) => {
   // Ignore messages from bots (including self)
+  const MH = new MessageHelper(message);
   if (message.author.bot) return;
 
   if (validTodoChannel(message.channel.id)) {
     const { errorLog, successLog } = selectLoggers(discord.channels);
-    const MH = new MessageHelper(message);
-
-    const messageUrl = MH.messageUrl();
 
     const assigner = getUser(message.author.username, "discord_username");
     const channel = getTodo(message.channel.id, "channel_id");
@@ -41,7 +39,7 @@ discord.on("messageCreate", async (message: Message<boolean>) => {
     try {
       const taskPromises = assignments.map(
         async (assigned) =>
-          __prod__ && // only create tasks in prod by default
+          __prod__ && // comment out -> if you need to create tasks in while testing
           createTask({
             title: MH.formattedMessage(),
             url: MH.messageUrl(),
