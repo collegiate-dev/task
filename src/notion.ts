@@ -1,65 +1,94 @@
 import { notion } from "./clients";
-import { truncateTitle } from "./utils";
-
-export const createTasks = async (tasks: CreateTask[]) => {
-  const promises = tasks.map((task) => createTask(task));
-  return Promise.all(promises);
-};
+import { E_Access, E_Testing } from "./data/schema/enums";
+import type { T_TodoChannel, T_User } from "./data/schema/types";
+import { truncate } from "./utils";
 
 interface CreateTask {
-  task: string;
+  title: string;
   url: string;
-  channel: string;
-  assignerId: string;
-  assignedId: string;
+  channel: T_TodoChannel;
+  assigner: T_User;
+  assigned: T_User;
 }
-const createTask = async ({
-  task,
+
+// export const createTasks = async (tasks: CreateTask[]) => {
+//   const promises = tasks.map((task) => createTask(task));
+//   return Promise.all(promises);
+// };
+
+// returns created notion page url
+export const createTask = async ({
+  title,
   url,
   channel,
-  assignerId,
-  assignedId,
+  assigner,
+  assigned,
 }: CreateTask) => {
-  const TASKMASTER_DB_ID = "42ab110e5caf4c7d8eeb28a815805fc5";
-  const tt = await notion.pages.create({
-    parent: { database_id: TASKMASTER_DB_ID },
-    properties: {
-      Task: {
-        title: [
-          {
-            text: {
-              content: truncateTitle(task),
-            },
-          },
-        ],
-      },
-      Channel: {
-        select: {
-          name: channel,
-        },
-      },
-      Assigner: {
-        people: [
-          {
-            id: assignerId,
-          },
-        ],
-      },
-      Assigned: {
-        people: [
-          {
-            id: assignedId,
-          },
-        ],
-      },
-    },
-    children: [
-      {
-        object: "block",
-        bookmark: {
-          url,
-        },
-      },
-    ],
+  let properties = {
+    Task: NH.setTitle(truncate(title)),
+    Status: NH.setSelect("Todo"),
+    Assigner: NH.setPerson(assigner.notion_id),
+    Assigned: NH.setPerson(assigned.notion_id),
+  } as any; // remove any when informally testing code
+
+  if (channel.team.role === E_Testing.Testing) {
+    properties = {
+      ...properties,
+      Status: NH.setSelect("Testing"),
+    };
+  } else if (channel.team.access === E_Access.Team) {
+    properties = {
+      ...properties,
+      Channel: NH.setSelect(channel.channel_name),
+    };
+  }
+
+  const created = await notion.pages.create({
+    parent: { database_id: channel.team.access },
+    properties,
+    children: [NH.urlObject(url)],
   });
+
+  // Notion typing is still wrong
+  //@ts-ignore
+  return created.url as string;
+};
+
+// notion helpers to set properties into the right shape
+const NH = {
+  setTitle: (title: string) => {
+    return {
+      title: [
+        {
+          text: {
+            content: truncate(title),
+          },
+        },
+      ],
+    };
+  },
+  setSelect: (name: string) => {
+    return {
+      select: {
+        name,
+      },
+    };
+  },
+  setPerson: (id: string) => {
+    return {
+      people: [
+        {
+          id,
+        },
+      ],
+    };
+  },
+  urlObject: (url: string) => {
+    return {
+      object: "block" as const,
+      bookmark: {
+        url,
+      },
+    };
+  },
 };

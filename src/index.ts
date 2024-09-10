@@ -1,10 +1,12 @@
 import { discord } from "./clients";
-import { createTasks } from "./notion";
+import { createTask } from "./notion";
 import { MessageHelper } from "./message";
 import { selectLoggers } from "./data/loggers";
 import { validTodoChannel, getTodo } from "./data/todos";
 import { getUser } from "./data/users";
 import type { Message } from "discord.js";
+import { E_Testing } from "./data/schema/enums";
+import { __prod__ } from "./constants";
 
 discord.once("ready", () => {
   if (discord.user) console.log(`Logged in as ${discord.user.tag}`);
@@ -20,7 +22,6 @@ discord.on("messageCreate", async (message: Message<boolean>) => {
     const { errorLog, successLog } = selectLoggers(discord.channels);
     const MH = new MessageHelper(message);
 
-    const taskContent = MH.formattedMessage();
     const messageUrl = MH.messageUrl();
 
     const assigner = getUser(message.author.username, "discord_username");
@@ -38,25 +39,25 @@ discord.on("messageCreate", async (message: Message<boolean>) => {
 
     // generate tasks, if error we log and return
     try {
-      const tasks = assignments.map((assigned) => {
-        return {
-          task: taskContent,
-          url: messageUrl,
-          channel: channel.name,
-          assignerId: assigner.notion_id,
-          assignedId: assigned.notion_id,
-        };
-      });
-      await createTasks(tasks);
-
-      // successful log output
-      const successMessage = MH.successMessage(assigner, assignments);
-      successLog.send(successMessage);
-      console.log("\n" + successMessage);
+      const taskPromises = assignments.map(async (assigned) =>
+        createTask({
+          title: MH.formattedMessage(),
+          url: MH.messageUrl(),
+          channel,
+          assigner,
+          assigned,
+        }).then((notionUrl) => {
+          const success = MH.successMessage(assigner, assigned, notionUrl);
+          console.log("\n" + success);
+          if (__prod__ && channel.team.role === E_Testing.Testing) return;
+          successLog.send(success);
+        })
+      );
+      await Promise.all(taskPromises);
     } catch (error) {
       const errorMessage = MH.errorMessage(assigner, assignments);
-      errorLog.send(errorMessage);
       console.error(errorMessage + "\n" + error);
+      errorLog.send(errorMessage);
       return;
     }
   }

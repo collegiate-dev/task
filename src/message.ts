@@ -16,16 +16,17 @@ export class MessageHelper {
 
   formattedMessage = () => {
     // Use regex to match <@id> and surrounding spaces, then replace with a single space
-    return this.message.content
+    const formatted = this.message.content
       .replace(/<@[\d]+>|<@&[\d]+>\s*/g, "")
       .replace(/\s\s+/g, " ")
       .trim();
+    return formatted || "TODO"; // if empty message, return placeholder
   };
 
   messageUrl = () => {
     if (!this.message.guild) {
       console.error("MessageHelper: message.guild is undefined");
-      return "";
+      return "MISSING_URL";
     }
     return `https://discord.com/channels/${this.message.guild.id}/${this.message.channel.id}/${this.message.id}`;
   };
@@ -58,9 +59,9 @@ export class MessageHelper {
     return filteredMembers;
   };
 
-  successMessage = (assigner: T_User, assigned: T_User[]) => {
-    const assignments = this.helpers.assignments(assigner, assigned);
-    return `${assignments}\n${this.helpers.taskData()}`;
+  successMessage = (assigner: T_User, assigned: T_User, notionUrl?: string) => {
+    const assignments = this.helpers.assignments(assigner, [assigned]);
+    return `${assignments}\n${this.helpers.taskData(notionUrl)}`;
   };
   errorMessage = (assigner: T_User, assigned: T_User[]) => {
     const errorHeader = `${PING_TECH_ROLE} **TASKMASTER ERROR!**`;
@@ -75,10 +76,11 @@ export class MessageHelper {
         .map((a) => a.name)
         .join(", ")}`;
     },
-    taskData: () => {
+    taskData: (notionUrl?: string) => {
       const task = this.formattedMessage();
-      const url = this.messageUrl();
-      return `**${task}**\n${url}`;
+      const taskPage = notionUrl ? `[${task}](${notionUrl})` : task;
+      const discordUrl = this.messageUrl();
+      return `**${taskPage}**\n${discordUrl}`;
     },
   };
 }
