@@ -1,6 +1,6 @@
 import type { ChannelManager, TextChannel } from "discord.js";
-import { E_Logger } from "./schema/enums";
-import type { T_LoggerChannel } from "./schema/types";
+import { E_Logger } from "./models/enums";
+import type { T_LoggerChannel } from "./models/types";
 import { __prod__ } from "../constants";
 
 export const LOGGERS: T_LoggerChannel[] = [

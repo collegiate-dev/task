@@ -2,9 +2,9 @@
 
 import type { Message } from "discord.js";
 import { isDefined } from "./utils";
-import { accessUsers, getTeam } from "./data/teams";
-import type { T_TodoChannel, T_User } from "./data/schema/types";
-import { getUser } from "./data/users";
+import { accessUsers, getTeam } from "./schema/teams";
+import type { T_TodoChannel, T_User } from "./schema/models/types";
+import { getUser } from "./schema/users";
 
 const PING_TECH_ROLE = "<@&1281661066270478336>";
 

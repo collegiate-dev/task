@@ -1,11 +1,11 @@
 import { discord } from "./clients";
 import { createTask } from "./notion";
 import { MessageHelper } from "./message";
-import { selectLoggers } from "./data/loggers";
-import { validTodoChannel, getTodo } from "./data/todos";
-import { getUser } from "./data/users";
+import { selectLoggers } from "./schema/loggers";
+import { validTodoChannel, getTodo } from "./schema/todos";
+import { getUser } from "./schema/users";
 import type { Message } from "discord.js";
-import { E_Testing } from "./data/schema/enums";
+import { E_Testing } from "./schema/models/enums";
 import { __prod__ } from "./constants";
 
 discord.once("ready", () => {

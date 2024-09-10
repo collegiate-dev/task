@@ -1,6 +1,6 @@
 import { TEAMS } from "./teams";
-import { E_Role } from "./schema/enums";
-import type { T_Team, T_TodoChannel } from "./schema/types";
+import { E_Role } from "./models/enums";
+import type { T_Team, T_TodoChannel } from "./models/types";
 
 // role to team
 const rt = (role: E_Role | "Testing"): T_Team => {

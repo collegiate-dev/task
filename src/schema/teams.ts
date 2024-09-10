@@ -1,6 +1,6 @@
 import { USERS } from "./users";
-import { E_Access, E_Role, E_Testing, E_Worker } from "./schema/enums";
-import type { T_User, T_Team } from "./schema/types";
+import { E_Access, E_Role, E_Testing, E_Worker } from "./models/enums";
+import type { T_User, T_Team } from "./models/types";
 
 // worker to user
 const wu = (worker: E_Worker): T_User => {

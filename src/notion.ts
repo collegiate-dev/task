@@ -1,6 +1,6 @@
 import { notion } from "./clients";
-import { E_Access, E_Testing } from "./data/schema/enums";
-import type { T_TodoChannel, T_User } from "./data/schema/types";
+import { E_Access, E_Testing } from "./schema/models/enums";
+import type { T_TodoChannel, T_User } from "./schema/models/types";
 import { truncate } from "./utils";
 
 interface CreateTask {

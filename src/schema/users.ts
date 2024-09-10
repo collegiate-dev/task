@@ -1,5 +1,5 @@
-import { E_Worker } from "./schema/enums";
-import type { T_User } from "./schema/types";
+import { E_Worker } from "./models/enums";
+import type { T_User } from "./models/types";
 
 export const USERS: T_User[] = [
   {
