@@ -28,9 +28,11 @@ export const createTask = async ({
   let properties = {
     Task: NH.setTitle(truncate(title)),
     Status: NH.setSelect("Todo"),
+    "Start Date": NH.setDate(0),
     Deadline: NH.setDate(3), // default deadline is 3 days
     Assigner: NH.setPerson(assigner.notion_id),
     Assigned: NH.setPerson(assigned.notion_id),
+    Channel: NH.setSelect("Team"), // default channel is team
   } as any; // remove any when informally testing code
 
   if (channel.team.role === E_Testing.Testing) {
@@ -91,7 +93,7 @@ const NH = {
     // 0 = today, 1 = tomorrow, 2 = in 2 days, etc
     return {
       date: {
-        start: dayjs().add(fromToday, "day").toISOString(),
+        start: dayjs().add(fromToday, "day").format("YYYY-MM-DD"),
       },
     };
   },
