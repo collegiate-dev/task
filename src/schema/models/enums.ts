@@ -1,5 +1,11 @@
 // E_ for Enums (makes autocomplete easier)
 
+export enum E_Access { // Admin > Finance > Team, taskmaster notion db ids
+  Admin = "109884abb67080e9ba22f28d34bf9178",
+  Finance = "109884abb6708069897fc95d7d9e11d8",
+  Team = "141ff1ce188249be827194e1be569271",
+}
+
 export enum E_Worker {
   JesseLee = "Jesse Lee",
   IshaanBansal = "Ishaan Bansal",
@@ -27,12 +33,6 @@ export enum E_Role {
 
 export enum E_Testing {
   Testing = "Testing",
-}
-
-export enum E_Access { // Admin > Finance > Team, taskmaster notion db ids
-  Admin = "acc6b242df8f4892ab8f7ee2a374d4ba",
-  Finance = "82c31a22aa2341f39a0bbb130d7759f3",
-  Team = "42ab110e5caf4c7d8eeb28a815805fc5",
 }
 
 export enum E_Logger {
