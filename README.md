@@ -11,11 +11,9 @@ syncs discord todo channels with notion.
 
 How to not shoot yourself in the foot and break things (run integration tests when they're up):
 
-1. Edit table changes on Team Taskmaster table first (easiest to migrate)
-2. Once changes are finalized, duplicate Team Taskmaster tables x2 then move them to Taskmaster-Home
-3. For new Admin + Finance Taskmaster table, edit the table name, remove Channel property, then migrate all data over
-4. Move data from old Taskmaster tables to the new Taskmaster tables you just setup
-5. Delete the old Taskmaster tables
-6. Move Finance Taskmaster to Finance Work location
-7. Update new Taskmaster table ids in this codebase, under `src/schema/models/enums.ts`
-8. Update references in Taskmaster Notion documentation page
+1. Duplicate Team Taskmaster table (no content), move table to Taskmaster Home Page, then copy and paste a couple exxample tasks to test on new table
+2. Once changes are finalized, duplicate new Team Taskmaster table x2, rename tables to Admin + Finance Taskmaster
+3. Port data from old Taskmaster tables to the new Taskmaster tables you just setup, delete old tables
+4. Move new Finance Taskmaster to Finance Work Page, new Team Taskmaster to Collegiate Home Page
+5. Update new Taskmaster table ids in this codebase, under `src/schema/models/enums.ts`
+6. Update references in Taskmaster Notion documentation page
