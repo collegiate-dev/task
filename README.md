@@ -16,4 +16,4 @@ How to not shoot yourself in the foot and break things (run integration tests wh
 3. Port data from old Taskmaster tables to the new Taskmaster tables you just setup, delete old tables
 4. Move new Finance Taskmaster to Finance Work Page, new Team Taskmaster to Collegiate Home Page
 5. Update new Taskmaster table ids in this codebase, under `src/schema/models/enums.ts`
-6. Update references in Taskmaster Notion documentation page
+6. Update references in Taskmaster Notion documentation page, add a new changelog entry
