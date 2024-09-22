@@ -15,10 +15,10 @@ discord.once("ready", () => {
 
 // casting message type to Message<boolean> cuz idk tf default message type does
 discord.on("messageCreate", async (message: Message<boolean>) => {
+  console.log(message.content);
   // Ignore messages from bots (including self)
   const MH = new MessageHelper(message);
   if (message.author.bot) return;
-  console.log(message.content);
   if (validTodoChannel(message.channel.id)) {
     const { errorLog, successLog } = selectLoggers(discord.channels);
 
@@ -32,15 +32,23 @@ discord.on("messageCreate", async (message: Message<boolean>) => {
     }
 
     // get everyone needed to create a task for
-    const assignments = MH.parseMentions(channel);
+    const assignments = await MH.parseMentions(channel);
     if (assignments.length === 0) return; // only run on pings
+
+    if (message.reference) {
+      console.log("This is a reply to another message.");
+      console.log(message.reference);
+      console.log(assignments);
+    }
 
     // generate tasks, if error we log and return
     try {
+      const message = MH.formattedMessage();
+      if (!message) return; // prioritizes use case where "pinging only" intent does not create a task
       const taskPromises = assignments.map(async (assigned) =>
         // __prod__ && // uncomment -> if you need to stop creating tasks while testing
         createTask({
-          title: MH.formattedMessage(),
+          title: message,
           url: MH.messageUrl(),
           channel,
           assigner,

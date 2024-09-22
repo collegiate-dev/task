@@ -1,7 +1,7 @@
 // message formatting helper
 
 import type { Message } from "discord.js";
-import { isDefined } from "./utils";
+import { getMessageFromReference, isDefined } from "./utils";
 import { accessUsers, getTeam } from "./schema/teams";
 import type { T_TodoChannel, T_User } from "./schema/models/types";
 import { getUser } from "./schema/users";
@@ -24,7 +24,7 @@ export class MessageHelper {
       .trim();
     // remove urls
     res = res.replace(/https?:\/\/\S+/g, "LINK");
-    return res || "TODO"; // if empty message, return placeholder
+    return res || null;
   };
 
   messageUrl = () => {
@@ -36,7 +36,7 @@ export class MessageHelper {
   };
 
   // returns a list of mentioned users based on all message pings
-  parseMentions = (channel: T_TodoChannel) => {
+  parseMentions = async (channel: T_TodoChannel) => {
     const everyoneOrNone = this.message.mentions.everyone
       ? accessUsers(E_Access.Team) // entire team
       : [];
@@ -49,7 +49,21 @@ export class MessageHelper {
         return role ? role.members : [];
       })
       .flat();
-    const members = [...new Set([...users, ...roleUsers, ...everyoneOrNone])]; // remove duplicate users
+    let members = [...new Set([...users, ...roleUsers, ...everyoneOrNone])]; // remove duplicate users
+
+    // subroutine to filter task creation for reply pings, unless specifically tagged
+    const reference = this.message.reference;
+    if (reference) {
+      // const referencedMessage = await this.message.channel.messages.fetch(this.message.reference.messageId);
+      const message = await getMessageFromReference(reference);
+      console.log("cool beans?", message);
+      // if (referencedAuthor) {
+      //   const referencedUser = getUser(referencedAuthor.id, "discord_id");
+      //   if (referencedUser) {
+      //     members = members.filter((member) => member !== referencedUser);
+      //   }
+      // }
+    }
 
     // filters message pinging for channels based on access level
     // ex: in admin-todos, typing @AM will not create a task for AM
