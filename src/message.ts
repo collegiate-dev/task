@@ -51,39 +51,49 @@ export class MessageHelper {
       .flat();
     let members = [...new Set([...users, ...roleUsers, ...everyoneOrNone])]; // remove duplicate users
 
-    // subroutine to filter task creation for reply pings, unless specifically tagged
-    const reference = this.message.reference;
-    if (reference) {
-      // const referencedMessage = await this.message.channel.messages.fetch(this.message.reference.messageId);
-      const message = await getMessageFromReference(reference);
-      console.log("cool beans?", message);
-      // if (referencedAuthor) {
-      //   const referencedUser = getUser(referencedAuthor.id, "discord_id");
-      //   if (referencedUser) {
-      //     members = members.filter((member) => member !== referencedUser);
-      //   }
-      // }
-    }
-
     // filters message pinging for channels based on access level
     // ex: in admin-todos, typing @AM will not create a task for AM
     const access = accessUsers(channel.team.access);
-    return members.filter((user) => access.includes(user));
+    members = members.filter((user) => access.includes(user));
+
+    // filters task creation for reply pings, unless specifically tagged
+    return this._replyfilter({ members, roleUsers });
+  };
+  private _replyfilter = async (props: {
+    members: T_User[];
+    roleUsers: T_User[];
+  }) => {
+    // get the author of the reply message
+    const reference = this.message.reference;
+    if (!reference) return props.members;
+    const replyMessage = await getMessageFromReference(reference);
+
+    if (!replyMessage) return props.members;
+    const replyUser = getUser(replyMessage.author.id, "discord_id");
+    console.log(replyUser);
+    if (!replyUser) return props.members;
+    // check if the author is pinged in the current message via tag or role
+    const userMentioned = this.message.content.includes(replyUser.discord_id);
+    const roleMentioned = props.roleUsers.includes(replyUser);
+
+    // if they are not pinged this way, filter them out; its likely to be a reply/check-in
+    return userMentioned || roleMentioned
+      ? props.members
+      : props.members.filter((m) => m !== replyUser);
   };
 
   successMessage = (assigner: T_User, assigned: T_User, notionUrl?: string) => {
-    const assignments = this.helpers.assignments(assigner, [assigned]);
-    return `${assignments}\n${this.helpers.taskData(notionUrl)}`;
+    const assignments = this._helpers.assignments(assigner, [assigned]);
+    return `${assignments}\n${this._helpers.taskData(notionUrl)}`;
   };
   errorMessage = (assigner: T_User, assigned: T_User[]) => {
     const errorOrigin = __prod__ ? this.PING_TECH_ROLE : "Dev Error:";
     const errorHeader = `${errorOrigin} **TASKMASTER ERROR!**`;
-    const assignments = this.helpers.assignments(assigner, assigned);
-    return `${errorHeader}\n${assignments}\n${this.helpers.taskData()}`;
+    const assignments = this._helpers.assignments(assigner, assigned);
+    return `${errorHeader}\n${assignments}\n${this._helpers.taskData()}`;
   };
-
   // format message string output functions
-  private helpers = {
+  private _helpers = {
     assignments: (assigner: T_User, assigned: T_User[]) => {
       return `${assigner.name} assigned a task to: ${assigned
         .map((a) => a.name)

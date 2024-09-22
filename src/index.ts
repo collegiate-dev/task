@@ -35,12 +35,6 @@ discord.on("messageCreate", async (message: Message<boolean>) => {
     const assignments = await MH.parseMentions(channel);
     if (assignments.length === 0) return; // only run on pings
 
-    if (message.reference) {
-      console.log("This is a reply to another message.");
-      console.log(message.reference);
-      console.log(assignments);
-    }
-
     // generate tasks, if error we log and return
     try {
       const message = MH.formattedMessage();

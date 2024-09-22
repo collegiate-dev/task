@@ -21,8 +21,5 @@ export const getMessageFromReference = async (reference: MessageReference) => {
   if (!response.ok) {
     throw new Error(`Failed to fetch message: ${response.statusText}`);
   }
-  const messageData = (await response.json()) as Message[];
-  console.log("here", messageData);
-  if (messageData.length === 0) throw new Error("Message not found");
-  return messageData[0];
+  return (await response.json()) as Message | undefined;
 };
