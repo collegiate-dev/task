@@ -65,7 +65,6 @@ export const USERS: T_User[] = [
 ];
 
 // Queries
-
 export const getUser = (value: string, key: keyof T_User) => {
   return USERS.find((user) => user[key] === value);
 };

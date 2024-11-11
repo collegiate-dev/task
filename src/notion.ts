@@ -4,6 +4,11 @@ import { E_Access, E_Testing } from "./schema/models/enums";
 import type { T_TodoChannel, T_User } from "./schema/models/types";
 import { truncate } from "./utils";
 
+// export const createTasks = async (tasks: CreateTask[]) => {
+//   const promises = tasks.map((task) => createTask(task));
+//   return Promise.all(promises);
+// };
+
 interface CreateTask {
   title: string;
   url: string;
@@ -11,11 +16,6 @@ interface CreateTask {
   assigner: T_User;
   assigned: T_User;
 }
-
-// export const createTasks = async (tasks: CreateTask[]) => {
-//   const promises = tasks.map((task) => createTask(task));
-//   return Promise.all(promises);
-// };
 
 // returns created notion page url
 export const createTask = async ({
@@ -43,7 +43,8 @@ export const createTask = async ({
   } else if (channel.team.access === E_Access.Team) {
     properties = {
       ...properties,
-      Channel: NH.setSelect(channel.team.role),
+      // role needs to be decoupled from channel setup
+      Channel: NH.setSelect(channel.tag),
     };
   }
 

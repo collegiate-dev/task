@@ -17,8 +17,9 @@ export type T_Team = {
 };
 
 type T_Channel = {
-  channel_name: string;
-  channel_id: string;
+  tag: string; // notion select property name
+  channel_name: string; // discord channel name
+  channel_id: string; // discord channel id
 };
 export type T_TodoChannel = T_Channel & {
   team: T_Team;

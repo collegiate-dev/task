@@ -10,7 +10,7 @@ const wu = (worker: E_Worker): T_User => {
 };
 
 // design philsophy for role members - ease of use
-// guiding question: who needs to stay in the loop? what's the usecase for pinging?
+// guiding question: who needs to stay in the loop? what's the use-case for pinging?
 const founders = [
   E_Worker.JesseLee,
   E_Worker.IshaanBansal,
