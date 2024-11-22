@@ -9,7 +9,10 @@ import { E_Testing } from "./schema/models/enums";
 import { __prod__ } from "./constants";
 
 discord.once("ready", () => {
-  if (discord.user) console.log(`Logged in as ${discord.user.tag}`);
+  if (discord.user)
+    console.log(
+      `Logged in as ${discord.user.tag} ${process.env.DISCORD} ${process.env.NOTION}`
+    );
   else console.error("Failed to login");
 });
 

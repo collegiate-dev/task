@@ -13,4 +13,13 @@ export const discord = new DiscordClient({
 });
 discord.login(process.env.DISCORD);
 
+export const minerBot = new DiscordClient({
+  intents: [
+    GatewayIntentBits.Guilds,
+    GatewayIntentBits.GuildMessages,
+    GatewayIntentBits.MessageContent,
+  ],
+});
+minerBot.login(process.env.MINER_DISCORD);
+
 export const notion = new NotionClient({ auth: process.env.NOTION });
